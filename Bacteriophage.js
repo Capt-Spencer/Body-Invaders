@@ -4,7 +4,7 @@ class Bacteriophage extends MovingObject {
     constructor(game, pos) {
         super(game, pos, BPHAGE_RADIUS);
 
-        this.hp = 160;
+        this.hp = 40;
 
         this.topDownSprites = buildRotatedCache("./assets/Units/Enemies.png", {x: 0, y: 0, w: 150, h: 150}, 4);
         this.animFrames = 4;
@@ -16,7 +16,7 @@ class Bacteriophage extends MovingObject {
         this.myBulletReset = 0;
         this.myBulletTime = 1;
 
-        this.speed = 180;
+        this.speed = 250;
 
         this.score = 400;
 
@@ -24,7 +24,7 @@ class Bacteriophage extends MovingObject {
     }
 
     draw(ctx) {
-        if (this.testRange())
+        if (this.testRange() > 1)
             return;
 
         var cAngle = Math.round(this.angle * (18 / 3.1415));
@@ -48,21 +48,12 @@ class Bacteriophage extends MovingObject {
 
 
     update() {
-        if (this.testRange())
+        if (this.testRange() > 1)
             return;
 
         var pPos = this.game.player;
 
-        if (Math.abs(pPos.x - this.x) > 30 || Math.abs(pPos.y - this.y) > 30) {
-
-            this.angle = Math.atan2(pPos.x - this.x, this.y - pPos.y) - (3.1415/2) ;
-
-            this.xVel = this.speed * Math.cos(this.angle);
-            this.yVel = this.speed * Math.sin(this.angle);
-        } else {
-            this.xVel = this.yVel = 0;
-            this.myBulletReset -= this.game.clockTick;
-        }
+        super.aimAtPlayer();
 
         var bulletPos = {x: this.x + 50 * Math.cos(this.angle), y: this.y + 50 * Math.sin(this.angle)};
 

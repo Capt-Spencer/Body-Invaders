@@ -39,6 +39,10 @@ function GameEngine() {
     this.surfaceWidth = null;
     this.surfaceHeight = null;
     this.score = 0;
+
+    this.bossCount = 0;
+    this.level = -1;
+    this.nextLevelTimer = 5;
 }
 
 GameEngine.prototype.init = function (ctx) {
@@ -74,6 +78,7 @@ GameEngine.prototype.startInput = function () {
         return { x: x, y: y };
     }
 
+    console.log("Adding keydown");
     this.ctx.canvas.addEventListener("keydown", function (e) {
         if (String.fromCharCode(e.which) === 'W') that.up = true;
         else if (String.fromCharCode(e.which) === 'A') that.left = true;
@@ -85,6 +90,7 @@ GameEngine.prototype.startInput = function () {
         //e.preventDefault();
     }, false);
 
+    console.log("Adding keyup");
     this.ctx.canvas.addEventListener("keyup", function (e) {
         if (String.fromCharCode(e.which) === 'W') that.up = false;
         else if (String.fromCharCode(e.which) === 'A') that.left = false;
@@ -144,16 +150,34 @@ GameEngine.prototype.draw = function () {
     this.ctx.fillStyle = "green";
     this.ctx.fillText("Score: " + this.score, 2, 80);
 
-    if (this.win) {
+    if (this.bossCount == 0 && this.level < Level.maxLevel) {
+        if (this.nextLevelTimer > 0) {
+            this.ctx.font = "60px Arial";
+            this.ctx.fillStyle = "green";
+            this.ctx.fillText("TRANSPORTING TO NEW AREA", this.screenWidth/2 - 300, this.screenHeight/2 + 150);
+        }
+
+    } else if (this.bossCount == 0 && this.level == Level.maxLevel) {
         this.ctx.font = "60px Arial";
         this.ctx.fillStyle = "green";
-        this.ctx.fillText("!YOU WIN!", this.screenWidth/2, this.screenHeight/2);
+        this.ctx.fillText("YOU HAVE SAVED THE PRESIDENT", this.screenWidth/2 - 300, this.screenHeight/2 + 150);
 
     } else if (this.player && this.player.hp != null && this.player.hp <= 0) {
         this.ctx.font = "60px Arial";
         this.ctx.fillStyle = "yellow";
-        this.ctx.fillText("!YOU LOST REFRESH TO CONTINUE!", 200, this.screenHeight/2);
+        this.ctx.fillText("YOU LOST - PREPARING A NEW VESSEL FOR KRUBER", 5, this.screenHeight/2 + 150);
 
+        if (!this.resetLevel)
+            this.resetTimer = 0;
+        this.resetLevel = true;
+    }
+
+    if (this.resetLevel) {
+        this.resetTimer += this.clockTick;
+        if (this.resetTimer > 3) {
+            this.resetLevel = false;
+            levelBuilder(this, Level[this.level].mapData, Level[this.level].bloodPaths);
+        }
     }
 
     this.ctx.restore();
@@ -186,4 +210,19 @@ GameEngine.prototype.loop = function () {
     this.update();
     this.draw();
     this.space = null;
+
+    if (this.bossCount == 0 && this.level < Level.maxLevel) {
+        if (this.nextLevelTimer <= 0 || this.level == 0)
+            this.nextLevel();
+        else {
+            this.nextLevelTimer -= this.clockTick;
+        }
+    }
+}
+
+
+GameEngine.prototype.nextLevel = function() {
+    this.level += 1;
+    this.nextLevelTimer = 5;
+    levelBuilder(this, Level[this.level].mapData, Level[this.level].bloodPaths);
 }

@@ -33,7 +33,7 @@ class RedBloodCell extends MovingObject {
         } else {
             this.pathIdx += 1;
             if (this.pathIdx >= this.path.length) {
-                this.destroy();
+                this.destroy(false);
                 return;
             }
         }
@@ -42,7 +42,7 @@ class RedBloodCell extends MovingObject {
     }
 
     draw(ctx) {
-        if (this.testRange())
+        if (this.testRange() > 1)
             return;
 
         this.anim.drawFrame(this.game.clockTick, ctx, this.screenX() - 50, this.screenY() - 50);

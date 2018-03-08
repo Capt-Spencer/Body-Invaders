@@ -53,12 +53,11 @@ levelBuilder = function(game, mapArray, bloodPaths) {
             } else if (unit == 9) {
                 new SputnikBoss(game, coords);
             } else if (unit == 10) {
-
+                new BlobberBoss(game, coords);
             } else if (unit == 11) {
                 new BlobberBoss(game, coords);
             } else if (unit == 12) {
                 var playerNeedle = new Needle(game, coords);
-                game.player = playerNeedle;
             }
         }
     }
