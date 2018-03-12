@@ -20,21 +20,23 @@ class RedBloodCell extends MovingObject {
     }
 
     update() {
-        var nPos = this.path[this.pathIdx];
+        if (!this.dying) {
+            var nPos = this.path[this.pathIdx];
 
-        //console.log(nPos);
+            //console.log(nPos);
 
-        if (!Math.abs(nPos.x - this.x) > 30 || Math.abs(nPos.y - this.y) > 30) {
+            if (!Math.abs(nPos.x - this.x) > 30 || Math.abs(nPos.y - this.y) > 30) {
 
-            this.angle = Math.atan2(nPos.x - this.x, this.y - nPos.y) - (3.1415/2) ;
+                this.angle = Math.atan2(nPos.x - this.x, this.y - nPos.y) - (3.1415/2) ;
 
-            this.xVel = this.speed * Math.cos(this.angle);
-            this.yVel = this.speed * Math.sin(this.angle);
-        } else {
-            this.pathIdx += 1;
-            if (this.pathIdx >= this.path.length) {
-                this.destroy(false);
-                return;
+                this.xVel = this.speed * Math.cos(this.angle);
+                this.yVel = this.speed * Math.sin(this.angle);
+            } else {
+                this.pathIdx += 1;
+                if (this.pathIdx >= this.path.length) {
+                    this.destroy(false);
+                    return;
+                }
             }
         }
 
@@ -45,7 +47,7 @@ class RedBloodCell extends MovingObject {
         if (this.testRange() > 1)
             return;
 
-        this.anim.drawFrame(this.game.clockTick, ctx, this.screenX() - 50, this.screenY() - 50);
+        this.anim.drawFrame(this.game.clockTick, ctx, this.screenX() - 50 * this.scale, this.screenY() - 50 * this.scale, this.scale);
         super.draw(ctx);
     }
 }
